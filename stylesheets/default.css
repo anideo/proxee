@@ -1,0 +1,43 @@
+#main {
+  padding-top: 120px;
+  min-height: 640px;
+}
+
+#main h1 {
+  width: 100%;
+  font-family: 'Alfa Slab One', cursive;
+  font-size: 10em;
+  text-align: center;
+  padding-bottom: 80px;
+}
+
+#main h2 {
+  width: 100%;
+  font-family: "monaco","courier new","andale mono","lucida console", monospace;
+  font-size: 2em;
+  text-align: center;
+  font-weight: normal;
+  padding-bottom: 40px;
+}
+
+#main h3 {
+  width: 100%;
+  font-family: "monaco","courier new","andale mono","lucida console", monospace;
+  font-size: 1em;
+  font-weight: normal;
+  text-align: center;
+}
+
+#default-container {
+  margin: 0 auto;
+}
+
+#about h3 {
+  padding-top: 2px;
+  color: #888;
+  font-size: 16px;
+}
+
+#about h3 strong {
+  text-transform: uppercase;
+}
