@@ -1,5 +1,7 @@
-require "proxee/version"
+require 'http/parser'
+require 'eventmachine'
+require 'uuid'
 
-module Proxee
-  # Your code goes here...
-end
+require 'proxee/version'
+require 'proxee/server'
+require 'proxee/connection'

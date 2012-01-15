@@ -1,0 +1,25 @@
+#!/usr/bin/env ruby
+
+lib = File.expand_path(File.dirname(__FILE__) + '/../lib')
+$LOAD_PATH.unshift(lib) if File.directory?(lib) && !$LOAD_PATH.include?(lib)
+
+require 'proxee'
+require 'optparse'
+
+ARGV << '--help' if ARGV.empty?
+
+options = {}
+OptionParser.new do |opts|
+  opts.banner = "Usage: proxee [options]"
+
+  opts.on("-p", "--port [PORT]", Integer, "Port to listen on") do |v|
+    options[:port] = v
+  end
+
+end.parse!
+
+EventMachine::run {
+  host, port = "0.0.0.0", options[:port]
+  puts "Now accepting connections on address #{host}:#{port}"
+  EventMachine::start_server(host, port, Proxee::Server)
+}

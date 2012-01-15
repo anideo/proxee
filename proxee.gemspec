@@ -8,8 +8,8 @@ Gem::Specification.new do |s|
   s.authors     = ["Arun Thampi"]
   s.email       = ["arun.thampi@gmail.com"]
   s.homepage    = ""
-  s.summary     = %q{TODO: Write a gem summary}
-  s.description = %q{TODO: Write a gem description}
+  s.summary     = %q{A Web-Debugging Proxy written using EventMachine}
+  s.description = %q{A Web-Debugging Proxy written using EventMachine}
 
   s.rubyforge_project = "proxee"
 
@@ -18,7 +18,9 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
 
-  # specify any dependencies here; for example:
-  # s.add_development_dependency "rspec"
-  # s.add_runtime_dependency "rest-client"
+  s.add_dependency  'eventmachine',   '~> 0.12.10'
+  s.add_dependency  'http_parser.rb', '~> 0.5.3'
+  s.add_dependency  'uuid',           '~> 2.3.4'
+
+  s.add_development_dependency  'rspec',  '~> 2.6.0'
 end
