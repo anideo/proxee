@@ -31,6 +31,14 @@ module Proxee
           event.save
         end
       end
+
+      @parser.on_message_complete = proc do |env|
+        event = Proxee::Event.find(self.client.name)
+        unless event.nil?
+          event.completed = 1
+          event.save
+        end
+      end
     end
 
     def connection_completed
@@ -50,9 +58,7 @@ module Proxee
     def receive_data(data)
       self.data_received_from_upstream << data
       @parser << data unless is_ssl
-
       self.client.send_data(data)
-      puts "Sending Data to Client: #{client.name}"
     end
 
     def unbind
@@ -60,6 +66,7 @@ module Proxee
       event = Proxee::Event.find(self.client.name)
       unless event.nil?
         event.response_body = event.response_body.to_s + self.data_received_from_upstream
+        event.completed = 1
         event.save
       end
     end
