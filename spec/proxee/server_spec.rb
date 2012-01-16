@@ -1,5 +1,5 @@
 require 'spec_helper'
 
-describe Proxee::Proxy do
+describe Proxee::Server do
   pending
 end

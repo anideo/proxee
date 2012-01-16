@@ -21,6 +21,11 @@ Gem::Specification.new do |s|
   s.add_dependency  'eventmachine',   '~> 0.12.10'
   s.add_dependency  'http_parser.rb', '~> 0.5.3'
   s.add_dependency  'uuid',           '~> 2.3.4'
+  s.add_dependency  'haml',           '~> 3.1'
+  s.add_dependency  'sinatra',        '~> 1.2'
+  s.add_dependency  'sqlite3',        '~> 1.3'
+  s.add_dependency  'thin',           '~> 1.2'
+  s.add_dependency  'activesupport',  '~> 3.1.3'
 
   s.add_development_dependency  'rspec',  '~> 2.6.0'
 end
