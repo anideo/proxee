@@ -22,14 +22,19 @@
 .info-container
   %h3 Request Headers
 
-  - JSON.parse(event.request_headers).each do |k,v|
+  - JSON.parse(event.request_headers || '{}').each do |k,v|
     .info
       .header= k
       .value= v
 
 .info-container
-  %h3 Response Headers
-  - JSON.parse(event.response_headers).each do |k,v|
-    .info
-      .header= k
-      .value= v
+  - if event.response_headers.present?
+    %h3 Response Headers
+    - JSON.parse(event.response_headers || '{}').each do |k,v|
+      .info
+        .header= k
+        .value= v
+  - else
+    %h3 Response Body
+    .info= event.response_body.to_s
+
