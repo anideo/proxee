@@ -15,43 +15,7 @@
               %a{:href => '#', :class => i == 0 ? 'selected' : ''}
                 %h2= e.request_url
                 %p= e.response_code
-      #main
-        %a#gist{:href => "#"} Gist it!
 
-        - first_event = @events.first
+      - if(first_event = @events.first).present?
+        = haml(:'_event_details', :locals => { :event => first_event })
 
-        .info-container
-          .info
-            .header Request URL
-            .value= first_event.request_url
-
-          .info
-            .header Request Method
-            .value= first_event.request_verb
-
-          .info
-            .header Status Code
-            .value= first_event.response_code
-
-          - if first_event.request_body.present?
-            %dd Request Body
-            %dt= first_event.request_body
-
-
-        .info-container
-          %h3 Request Headers
-
-          - JSON.parse(first_event.request_headers).each do |k,v|
-            .info
-              .header= k
-              .value= v
-
-        .info-container
-          %h3 Response Headers
-          - JSON.parse(first_event.response_headers).each do |k,v|
-            .info
-              .header= k
-              .value= v
-
-
-      .clear
