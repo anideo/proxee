@@ -6,6 +6,7 @@ require 'json'
 require 'thin'
 require 'sinatra'
 require 'pathname'
+require 'active_support/all'
 
 require 'proxee/version'
 require 'proxee/event'

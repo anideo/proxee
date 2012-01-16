@@ -118,4 +118,23 @@ describe Proxee::Event do
     end
   end
 
+  describe ".completed" do
+    before do
+      @now = Time.now
+
+      Timecop.freeze(@now - 5.minutes) do
+        @event_1 = Proxee::Event.create(:request_header => 'req_1', :response_headers => 'rsp_1')
+      end
+
+      Timecop.freeze(@now - 2.minutes) do
+        @event_2 = Proxee::Event.create(:request_header => 'req_2', :response_headers => 'rsp_2')
+      end
+    end
+
+    context "without since parameter" do
+      it "should return all events" do
+        Proxee::Event.completed.should == [@event_2, @event_1]
+      end
+    end
+  end
 end
