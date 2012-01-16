@@ -16,7 +16,12 @@ module Proxee
         port = (port || 80).to_i
         is_ssl = (port == 443)
 
-        @event = Proxee::Event.create(:id => @name, :request_headers => header.to_json)
+        @event = Proxee::Event.create(:id => @name,
+                                      :request_headers => header.to_json,
+                                      :request_url => @parser.request_url,
+                                      :request_verb => @parser.http_method,
+                                      :request_query => @parser.query_string)
+
         @mode = :ssl if is_ssl
         @server_socket = EM.connect(host, port, Proxee::Connection,
                                     # Custom params to the server socket

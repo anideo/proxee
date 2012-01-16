@@ -19,6 +19,7 @@ module Proxee
         event = Proxee::Event.find(self.client.name)
         unless event.nil?
           event.response_headers = header.to_json
+          event.response_code = @parser.status_code.to_i
           event.save
         end
       end
