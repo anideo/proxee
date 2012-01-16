@@ -9,28 +9,49 @@
     %a#reset{:href => "#"} Clear all
     #container
       #sidebar
-        %ul
-          %li
+        - @events.each_with_index do |e, i|
+          %ul
+            %li
+              %a{:href => '#', :class => i == 0 ? 'selected' : ''}
+                %h2= e.request_url
+                %p= e.response_code
       #main
         %a#gist{:href => "#"} Gist it!
 
-        %hr/
-        %h3 Request Headers
+        - first_event = @events.first
 
-        %dl
-          %dd
-            Request URL:
-          %dt
+        .info-container
+          .info
+            .header Request URL
+            .value= first_event.request_url
 
-          %dd
-            Request Method:
-          %dt
+          .info
+            .header Request Method
+            .value= first_event.request_verb
 
-          %dd
-            Status Code:
-          %dt
+          .info
+            .header Status Code
+            .value= first_event.response_code
 
-        %hr/
-        %h3 Response Headers
+          - if first_event.request_body.present?
+            %dd Request Body
+            %dt= first_event.request_body
+
+
+        .info-container
+          %h3 Request Headers
+
+          - JSON.parse(first_event.request_headers).each do |k,v|
+            .info
+              .header= k
+              .value= v
+
+        .info-container
+          %h3 Response Headers
+          - JSON.parse(first_event.response_headers).each do |k,v|
+            .info
+              .header= k
+              .value= v
+
 
       .clear

@@ -4,6 +4,7 @@ module Proxee
     set :haml, :format => :html5
 
     get '/' do
+      @events = Event.completed
       haml :index
     end
   end
