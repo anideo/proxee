@@ -28,6 +28,14 @@ module Proxee
                                     @proxy, @buffer.dup, is_ssl)
         @buffer.clear
       end
+
+      @parser.on_body = proc do |chunk|
+        event = Event.find(name)
+        unless event.nil?
+          event.request_body = event.request_body.to_s + chunk
+          event.save
+        end
+      end
     end
 
     def receive_data(data)
