@@ -1,0 +1,36 @@
+<!doctype html>
+%html
+  %head
+    %meta{:charset => "utf-8"}/
+    %title proxee.io
+    %link{:href => "/stylesheets/style.css", :rel => "stylesheet"}/
+  %body
+    %h1 proxee.io
+    %a#reset{:href => "#"} Clear all
+    #container
+      #sidebar
+        %ul
+          %li
+      #main
+        %a#gist{:href => "#"} Gist it!
+
+        %hr/
+        %h3 Request Headers
+
+        %dl
+          %dd
+            Request URL:
+          %dt
+
+          %dd
+            Request Method:
+          %dt
+
+          %dd
+            Status Code:
+          %dt
+
+        %hr/
+        %h3 Response Headers
+
+      .clear

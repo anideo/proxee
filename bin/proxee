@@ -12,14 +12,45 @@ options = {}
 OptionParser.new do |opts|
   opts.banner = "Usage: proxee [options]"
 
-  opts.on("-p", "--port [PORT]", Integer, "Port to listen on") do |v|
-    options[:port] = v
+  opts.on("-p", "--proxy-port [PORT]", Integer, "Proxy Port to listen on") do |v|
+    options[:proxy_port] = v
   end
 
+  opts.on("-h", "--http-port [PORT]", Integer, "HTTP Port for the web UI") do |v|
+    options[:http_port] = v
+  end
 end.parse!
 
+def rescue_port port
+  begin
+    yield
+
+  # XXX: EventMachine only spits out RuntimeError with a string description
+  rescue RuntimeError
+    if $!.to_s =~ /\bno acceptor\b/
+      puts "~~> ERROR: Something's using port #{port}. Are you already running Proxee?"
+      exit -1
+    else
+      raise
+    end
+  end
+end
+
 EventMachine::run {
-  host, port = "0.0.0.0", options[:port]
-  puts "Now accepting connections on address #{host}:#{port}"
-  EventMachine::start_server(host, port, Proxee::Server)
+  host = "0.0.0.0"
+
+  Thin::Logging.silent = true
+
+  puts "Now accepting connections on address #{host}:#{options[:proxy_port]}"
+  # Set up an SMTP server to run within EventMachine
+  rescue_port options[:proxy_port] do
+    EventMachine.start_server host, options[:proxy_port], Proxee::Server
+  end
+
+  # Let Thin set itself up inside our EventMachine loop
+  # (Skinny/WebSockets just works on the inside)
+  rescue_port options[:http_port] do
+    Thin::Server.start host, options[:http_port], Proxee::Web
+    puts "==> http://#{host}:#{options[:http_port]}"
+  end
 }
