@@ -2,6 +2,7 @@ require 'http/parser'
 require 'eventmachine'
 require 'uuid'
 require 'sqlite3'
+require 'json'
 
 require 'proxee/version'
 require 'proxee/event'

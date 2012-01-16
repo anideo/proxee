@@ -99,4 +99,23 @@ describe Proxee::Event do
     end
   end
 
+  describe ".create" do
+    before do
+      @event = Proxee::Event.create(:id => 'fake_id', :request_headers => 'req', :response_headers => 'res')
+    end
+
+    context "new record" do
+      it "should save the record to the in-memory SQLite database" do
+        query = @database.prepare("SELECT id, request_headers, response_headers FROM events where id = ?")
+        row = query.execute('fake_id').first
+
+        row[0].should == 'fake_id'
+        row[1].should == 'req'
+        row[2].should == 'res'
+
+        @event.persisted.should be_true
+      end
+    end
+  end
+
 end

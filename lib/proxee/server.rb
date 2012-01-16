@@ -9,12 +9,14 @@ module Proxee
       @mode = :http
       @server_socket = nil
       @name = UUID.generate
+      @event = nil
 
-      @parser.on_headers_complete = proc do |h|
-        host, port = h['Host'].split(':')
+      @parser.on_headers_complete = proc do |header|
+        host, port = header['Host'].split(':')
         port = (port || 80).to_i
         is_ssl = (port == 443)
 
+        @event = Proxee::Event.create(:id => @name, :request_headers => header.to_json)
         @mode = :ssl if is_ssl
         @server_socket = EM.connect(host, port, Proxee::Connection,
                                     # Custom params to the server socket

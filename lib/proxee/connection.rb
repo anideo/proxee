@@ -15,14 +15,28 @@ module Proxee
 
       @parser = Http::Parser.new
 
-      @parser.on_headers_complete = proc { |header| self.http_header = header }
-      @parser.on_body = proc { |chunk| self.http_body << chunk }
+      @parser.on_headers_complete = proc do |header|
+        event = Proxee::Event.find(self.client.name)
+        unless event.nil?
+          event.response_headers = header.to_json
+          event.save
+        end
+      end
+
+      @parser.on_body = proc do |chunk|
+        event = Proxee::Event.find(self.client.name)
+        unless event.nil?
+          event.response_body = event.response_body.to_s + chunk
+          event.save
+        end
+      end
     end
 
     def connection_completed
       # If this is an SSL proxy (with an HTTP CONNECT header), we need
       # to send a HTTP/1.0 200 Connection Established response back to the client,
       # so that the client can start the SSL handshake.
+      # From: http://muffin.doit.org/docs/rfc/tunneling_ssl.html
       if self.is_ssl
         @client.send_data("HTTP/1.0 200 Connection established\r\n\r\n")
       else
@@ -34,7 +48,7 @@ module Proxee
     # This is data received upstream from the server
     def receive_data(data)
       self.data_received_from_upstream << data
-      @parser << data
+      @parser << data unless is_ssl
 
       self.client.send_data(data)
       puts "Sending Data to Client: #{client.name}"
@@ -42,6 +56,11 @@ module Proxee
 
     def unbind
       # Handle self.data_received_from_upstream (in case of SSL)
+      event = Proxee::Event.find(self.client.name)
+      unless event.nil?
+        event.response_body = event.response_body.to_s + self.data_received_from_upstream
+        event.save
+      end
     end
   end
 end

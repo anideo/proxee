@@ -35,20 +35,27 @@ module Proxee
       end
     end
 
+    def self.create(opts)
+      Proxee::Event.new(opts).tap { |e| e.save }
+    end
+
     # Class Methods
     def self.db
       @@__db ||= begin
         SQLite3::Database.new(':memory:', :type_translation => true).tap do |db|
-          db.execute(<<-SQL)
-            CREATE TABLE events (
-              id STRING PRIMARY KEY,
-              request_headers TEXT,
-              request_body TEXT,
-              response_headers TEXT,
-              response_body TEXT,
-              created_at DATETIME DEFAULT CURRENT_DATETIME
-            )
-          SQL
+          row = db.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='events'").first
+          if row.nil?
+            db.execute(<<-SQL)
+              CREATE TABLE events (
+                id STRING PRIMARY KEY,
+                request_headers TEXT,
+                request_body TEXT,
+                response_headers TEXT,
+                response_body TEXT,
+                created_at DATETIME DEFAULT CURRENT_DATETIME
+              )
+            SQL
+          end
         end
       end
     end
