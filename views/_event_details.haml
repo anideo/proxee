@@ -1,36 +1,35 @@
-#main
-  %a#gist{:href => "#"} Gist it!
+%a#gist{:href => "#"} Gist it!
 
+.info-container
+  .info
+    .header Request URL
+    .value= event.request_url
 
-  .info-container
+  .info
+    .header Request Method
+    .value= event.request_verb
+
+  .info
+    .header Status Code
+    .value= event.response_code
+
+  - if event.request_body.present?
     .info
-      .header Request URL
-      .value= event.request_url
+      .header Request Body
+      .value= event.request_body
 
+
+.info-container
+  %h3 Request Headers
+
+  - JSON.parse(event.request_headers).each do |k,v|
     .info
-      .header Request Method
-      .value= event.request_verb
+      .header= k
+      .value= v
 
+.info-container
+  %h3 Response Headers
+  - JSON.parse(event.response_headers).each do |k,v|
     .info
-      .header Status Code
-      .value= event.response_code
-
-    - if event.request_body.present?
-      %dd Request Body
-      %dt= event.request_body
-
-
-  .info-container
-    %h3 Request Headers
-
-    - JSON.parse(event.request_headers).each do |k,v|
-      .info
-        .header= k
-        .value= v
-
-  .info-container
-    %h3 Response Headers
-    - JSON.parse(event.response_headers).each do |k,v|
-      .info
-        .header= k
-        .value= v
+      .header= k
+      .value= v
