@@ -19,6 +19,7 @@ describe Proxee::Event do
         @event.id.should == 'abc'
         @event.request.should == 'req'
         @event.response.should == 'resp'
+        @event.persisted.should be_false
       end
     end
 
@@ -32,6 +33,7 @@ describe Proxee::Event do
         @event.id.should == 'fake-id'
         @event.request.should == 'req'
         @event.response.should == 'resp'
+        @event.persisted.should be_false
       end
     end
   end
@@ -39,16 +41,35 @@ describe Proxee::Event do
   describe "#save" do
     before do
       @event = Proxee::Event.new(:id => 'fake_id', :request => 'req', :response => 'res')
-      @event.save
     end
 
-    it "should save the record to the in-memory SQLite database" do
-      query = @database.prepare("SELECT id, request, response FROM events where id = ?")
-      row = query.execute('fake_id').first
+    context "new record" do
+      it "should save the record to the in-memory SQLite database" do
+        @event.save
 
-      row[0].should == 'fake_id'
-      row[1].should == 'req'
-      row[2].should == 'res'
+        query = @database.prepare("SELECT id, request, response FROM events where id = ?")
+        row = query.execute('fake_id').first
+
+        row[0].should == 'fake_id'
+        row[1].should == 'req'
+        row[2].should == 'res'
+
+        @event.persisted.should be_true
+      end
+    end
+
+    context "existing record" do
+      it "should save the record with the updated value" do
+        @event.request = 'new_req'
+        @event.save
+
+        query = @database.prepare("SELECT id, request, response FROM events where id = ?")
+        row = query.execute('fake_id').first
+
+        row[0].should == 'fake_id'
+        row[1].should == 'new_req'
+        row[2].should == 'res'
+      end
     end
   end
 
@@ -65,6 +86,8 @@ describe Proxee::Event do
         event.id.should == 'fake_id'
         event.request.should == 'req'
         event.response.should == 'res'
+
+        event.persisted.should be_true
       end
     end
 
