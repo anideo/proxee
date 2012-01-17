@@ -44,8 +44,20 @@ def rescue_port port
   end
 end
 
+# From: http://coderrr.wordpress.com/2008/05/28/get-your-local-ip-address/
+def local_ip
+  # turn off reverse DNS resolution temporarily
+  orig, Socket.do_not_reverse_lookup = Socket.do_not_reverse_lookup, true
+  UDPSocket.open do |s|
+    s.connect '64.233.187.99', 1
+    s.addr.last
+  end
+ensure
+  Socket.do_not_reverse_lookup = orig
+end
+
 EventMachine::run {
-  host = "0.0.0.0"
+  host = local_ip
   Thin::Logging.silent = true
 
   # Set up an SMTP server to run within EventMachine

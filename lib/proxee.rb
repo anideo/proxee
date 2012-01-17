@@ -7,6 +7,7 @@ require 'thin'
 require 'sinatra'
 require 'pathname'
 require 'active_support/all'
+require 'socket'
 
 require 'proxee/version'
 require 'proxee/event'
