@@ -6,18 +6,26 @@ $LOAD_PATH.unshift(lib) if File.directory?(lib) && !$LOAD_PATH.include?(lib)
 require 'proxee'
 require 'optparse'
 
-ARGV << '--help' if ARGV.empty?
+options = {
+  :proxy_port => 9010,
+  :http_port  => 9050,
+  :daemon     => true
+}
 
-options = {}
-OptionParser.new do |opts|
-  opts.banner = "Usage: proxee [options]"
+OptionParser.new do |parser|
+  parser.banner = "Usage: proxee [options]"
+  parser.version = Proxee::VERSION
 
-  opts.on("-p", "--proxy-port [PORT]", Integer, "Proxy Port to listen on") do |v|
-    options[:proxy_port] = v
+  parser.on("--proxy-port [PORT]", Integer, "Proxy Port to listen on") do |pp|
+    options[:proxy_port] = pp
   end
 
-  opts.on("-h", "--http-port [PORT]", Integer, "HTTP Port for the web UI") do |v|
-    options[:http_port] = v
+  parser.on("--http-port [PORT]", Integer, "HTTP Port for the web UI") do |hp|
+    options[:http_port] = hp
+  end
+
+  parser.on('-f', '--foreground', 'Run in the foreground') do
+    options[:daemon] = false
   end
 end.parse!
 
@@ -38,19 +46,26 @@ end
 
 EventMachine::run {
   host = "0.0.0.0"
-
   Thin::Logging.silent = true
 
-  puts "Now accepting connections on address #{host}:#{options[:proxy_port]}"
   # Set up an SMTP server to run within EventMachine
   rescue_port options[:proxy_port] do
     EventMachine.start_server host, options[:proxy_port], Proxee::Server
+    puts "Proxee Server ==> http://#{host}:#{options[:proxy_port]}"
   end
 
   # Let Thin set itself up inside our EventMachine loop
   # (Skinny/WebSockets just works on the inside)
   rescue_port options[:http_port] do
     Thin::Server.start host, options[:http_port], Proxee::Web
-    puts "==> http://#{host}:#{options[:http_port]}"
+    puts "Web UI ==> http://#{host}:#{options[:http_port]}"
+  end
+
+  # Daemonize, if we should, but only after the servers have started.
+  if options[:daemon]
+    EventMachine.next_tick do
+      puts "==> proxee.io runs as a daemon by default."
+      Process.daemon
+    end
   end
 }
