@@ -20,7 +20,7 @@ describe Proxee::Event do
         @event.request_headers.should == 'req'
         @event.response_headers.should == 'resp'
         @event.persisted.should be_false
-        @event.completed.should == 0
+        @event.completed_at.should be_nil
       end
     end
 
@@ -124,11 +124,11 @@ describe Proxee::Event do
       @now = Time.now
 
       Timecop.freeze(@now - 5.minutes) do
-        @event_1 = Proxee::Event.create(:request_header => 'req_1', :response_headers => 'rsp_1', :completed => 1)
+        @event_1 = Proxee::Event.create(:request_header => 'req_1', :response_headers => 'rsp_1', :completed_at => DateTime.now)
       end
 
       Timecop.freeze(@now - 2.minutes) do
-        @event_2 = Proxee::Event.create(:request_header => 'req_2', :response_headers => 'rsp_2', :completed => 1)
+        @event_2 = Proxee::Event.create(:request_header => 'req_2', :response_headers => 'rsp_2', :completed_at => DateTime.now)
       end
 
       Timecop.freeze(@now - 1.minute) do

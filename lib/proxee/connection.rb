@@ -35,7 +35,7 @@ module Proxee
       @parser.on_message_complete = proc do |env|
         event = Proxee::Event.find(self.client.name)
         unless event.nil?
-          event.completed = 1
+          event.completed_at = DateTime.now
           event.save
         end
       end
@@ -67,7 +67,7 @@ module Proxee
       unless event.nil?
         event.response_body = event.response_body.to_s + self.data_received_from_upstream
         event.response_code = 200
-        event.completed = 1
+        event.completed_at = DateTime.now
         event.save
       end
     end
