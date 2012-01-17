@@ -15,7 +15,7 @@
             %li
               %a{:href => '#', :class => i == 0 ? 'selected event' : 'unselected event', :'data-id' => e.id}
                 %h2= e.request_url
-                %p= e.response_code
+                %p= "HTTP #{e.request_verb} &middot; #{e.response_code}"
 
       #main
         - if(first_event = @events.first).present?
@@ -27,5 +27,25 @@
       $.get('/events/' + eventId);
       $('.selected').removeClass('selected');
       $(this).addClass('selected');
+    });
+
+    $('.toggle a').click(function() {
+      var selectedElem = $(this);
+      var previouslySelectedElem = $(this).parent().parent().find('a.selected');
+
+      previouslySelectedElem.removeClass('selected');
+      selectedElem.addClass('selected');
+
+      if(selectedElem.parent().attr('class').match(/body/)) {
+        var grandParent = selectedElem.parent().parent().parent();
+        grandParent.find('.info.body').show();
+        grandParent.find('.info.headers').hide();
+      }
+
+      if(selectedElem.parent().attr('class').match(/headers/)) {
+        var grandParent = selectedElem.parent().parent().parent();
+        grandParent.find('.info.body').hide();
+        grandParent.find('.info.headers').show();
+      }
     });
 

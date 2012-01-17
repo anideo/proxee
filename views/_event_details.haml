@@ -5,36 +5,32 @@
     .header Request URL
     .value= event.request_url
 
-  .info
-    .header Request Method
-    .value= event.request_verb
-
-  .info
-    .header Status Code
-    .value= event.response_code
-
-  - if event.request_body.present?
-    .info
-      .header Request Body
-      .value= event.request_body
-
-
 .info-container
-  %h3 Request Headers
+  .toggle
+    .toggle-headers
+      %a{:href => '#', :class => 'selected'}
+        %h3 Request Headers
+    .toggle-body
+      %a{:href => '#'}
+        %h3 Request Body
 
   - JSON.parse(event.request_headers || '{}').each do |k,v|
-    .info
+    .info.headers
       .header= k
       .value= v
+  .info.body= event.request_body.to_s
 
 .info-container
-  - if event.response_headers.present?
-    %h3 Response Headers
-    - JSON.parse(event.response_headers || '{}').each do |k,v|
-      .info
-        .header= k
-        .value= v
-  - else
-    %h3 Response Body
-    .info= event.response_body.to_s
+  .toggle
+    .toggle-headers
+      %a{:href => '#', :class => 'selected'}
+        %h3 Response Headers
+    .toggle-body
+      %a{:href => '#'}
+        %h3 Response Body
+  - JSON.parse(event.response_headers || '{}').each do |k,v|
+    .info.headers
+      .header= k
+      .value= v
+  .info.body= event.response_body.to_s
 
