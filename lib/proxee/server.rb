@@ -13,7 +13,7 @@ module Proxee
 
       @parser.on_headers_complete = proc do |header|
         host, port = header['Host'].split(':')
-        port = (port || 80).to_i
+        port = (@parser.http_method == 'CONNECT' ? 443 : 80) if port.blank?
         is_ssl = (port == 443)
 
         @event = Proxee::Event.create(:id => @name,
